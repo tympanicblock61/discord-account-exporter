@@ -3,7 +3,7 @@ import os
 import keyboard
 
 
-def account_info(token, types):
+def account_info(token: str, types: str):
     token = {'authorization': token}
     e = requests.get('https://discord.com/api/v9/users/@me', headers=token).json()
     if types == 'whole':
@@ -18,7 +18,7 @@ def account_info(token, types):
         return e['id']
 
 
-def get_channel_msgs(token, channelid):
+def get_channel_msgs(token: str, channelid: int):
     headers = {'authorization': token, "content-type": "application/json"}
     fetchedMessages = []
     data = requests.get(f'https://discord.com/api/v9/channels/{channelid}/messages?limit=100',
@@ -43,12 +43,12 @@ def get_channel_msgs(token, channelid):
     return fetchedMessages
 
 
-def get_channels(token):
+def get_channels(token: str):
     data = requests.get("https://discord.com/api/v9/users/@me/channels", headers={'authorization': token}).json()
     return data
 
 
-def get_channel_name(token, channel_id):
+def get_channel_name(token: str, channel_id: int):
     global name, discriminator
     data = requests.get(f'https://discord.com/api/v9/channels/{channel_id}', headers={'authorization': token}).json()
     data = str(data['recipients'])
@@ -65,7 +65,7 @@ def get_channel_name(token, channel_id):
         'public_flags:', '').replace('avatar:', '')
 
 
-def exportEntireDiscordAccount(token):
+def exportEntireDiscordAccount(token: str):
     global account_name
     account_name = f"{account_info(token, 'username')}#{account_info(token, 'discriminator')}"
     if not os.path.exists(f"accounts"):
