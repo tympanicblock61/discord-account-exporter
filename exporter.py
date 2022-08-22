@@ -70,24 +70,14 @@ def exportEntireDiscordAccount(token):
     account_name = f"{account_info(token, 'username')}#{account_info(token, 'discriminator')}"
     if not os.path.exists(f"accounts"):
         os.mkdir(f"accounts")
-    else:
-        pass
     if not os.path.exists(f"accounts\\{account_name}"):
         os.mkdir(f"accounts\\{account_name}")
-    else:
-        pass
     if not os.path.exists(f"accounts\\{account_name}\\friends"):
         os.mkdir(f"accounts\\{account_name}\\friends")
-    else:
-        pass
     if not os.path.exists(f"accounts\\{account_name}\\dms"):
         os.mkdir(f"accounts\\{account_name}\\dms")
-    else:
-        pass
     if not os.path.exists(f"accounts\\{account_name}\\guilds"):
         os.mkdir(f"accounts\\{account_name}\\guilds")
-    else:
-        pass
     # friends
     res = requests.get("https://discord.com/api/v9/users/@me/relationships", headers={'authorization': token}).json()
     for item in res:
