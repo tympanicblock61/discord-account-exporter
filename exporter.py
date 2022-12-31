@@ -33,7 +33,7 @@ def get_channel_msgs(token, channelid):
             data = requests.get(f'https://discord.com/api/v9/channels/{channelid}/messages?before={str(ids[99])}&limit=100',headers=headers).json()
             try:
                 if "rate limited" in data["message"]:
-                    time.sleep(e['retry_after'] + 2.0)
+                    time.sleep(data['retry_after'] + 2.0)
                 data = requests.get(f'https://discord.com/api/v9/channels/{channelid}/messages?before={str(ids[99])}&limit=100',headers=headers).json()
             except:
                 pass
@@ -98,13 +98,14 @@ def exportEntireDiscordAccount(token):
     for channel in channels:
         name = get_channel_name(token, channel["id"])
         try:
-            if f"{name}.json" not in os.listdir(f"accounts\\{account_name}\\dms\\{name}"):
+            if f"{name}.json" not in os.listdir(f"accounts\\{account_name}\\dms"):
                 with open(f'accounts\\{account_name}\\dms\\{name}.json', 'w',encoding='utf-8') as e:
                     e.write(str(get_channel_msgs(token, channel['id'])))
                     print(f'made a dms file for {name}')
             else:
                 print(f'already made a dms file for {name}')
-        except:
+        except Exception as e:
+            print(e)
             print(f'could not make a dms file for {name}')
     # guilds
     res = requests.get("https://discord.com/api/v9/users/@me/guilds", headers={'authorization': token}).json()
