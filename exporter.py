@@ -104,8 +104,7 @@ def exportEntireDiscordAccount(token):
                     print(f'made a dms file for {name}')
             else:
                 print(f'already made a dms file for {name}')
-        except Exception as e:
-            print(e)
+        except:
             print(f'could not make a dms file for {name}')
     # guilds
     res = requests.get("https://discord.com/api/v9/users/@me/guilds", headers={'authorization': token}).json()
