@@ -107,50 +107,49 @@ def exportEntireDiscordAccount(token):
             pass
     # guilds
     res = requests.get("https://discord.com/api/v9/users/@me/guilds", headers={'authorization': token}).json()
-write_to = ''
-global item1
-for item1 in res:
-	global item_invite
-	item_invite = ''
-	print(f"getting invite for {item1['name']}")
-	if "VANITY_URL" in item1["features"]:
-		guild = requests.get(f"https://discord.com/api/v9/guilds/{item1['id']}", headers={'authorization': token}).json()
-		item_invite = f"invite for {item1['name']}: https://discord.gg/{guild['vanity_url_code']}\n"
-	else:
-		guild_channels = requests.get(f'https://discord.com/api/v9/guilds/{item1["id"]}/channels', headers={'authorization': token}).json()
-		for item in guild_channels:
-			if item["flags"] == 0 and item["type"] == 0:
-				payload = {
-					"max_age": 0,
-					"max_uses": 0,
-					"temporary": False,
-					"validate": None,
-					"target_type": None,
-					"unique": True
-				}
+    write_to = ''
+    global item1
+    for item1 in res:
+        global item_invite
+        item_invite = ''
+        print(f"getting invite for {item1['name']}")
+        if "VANITY_URL" in item1["features"]:
+            guild = requests.get(f"https://discord.com/api/v9/guilds/{item1['id']}", headers={'authorization': token}).json()
+            item_invite = f"invite for {item1['name']}: https://discord.gg/{guild['vanity_url_code']}\n"
+        else:
+            guild_channels = requests.get(f'https://discord.com/api/v9/guilds/{item1["id"]}/channels', headers={'authorization': token}).json()
+            for item in guild_channels:
+                if item["flags"] == 0 and item["type"] == 0:
+                    payload = {
+                        "max_age": 0,
+                        "max_uses": 0,
+                        "temporary": False,
+                        "validate": None,
+                        "target_type": None,
+                        "unique": True
+                    }
 
-				e = requests.post(f'https://discord.com/api/v9/channels/{item["id"]}/invites', json=payload, headers={'authorization': token}).json()
-				print(f"{item1['name']}:{item['name']}")
-				try:
-					if "rate limited" in e["message"]:
-						time.sleep(e['retry_after']+2.0)
-						e = requests.post(f"https://discord.com/api/v9/channels/{item['id']}/invites", json=payload, headers={"authorization": token}).json()
-				except:
-					pass
-				try:
-					if e['code'] != 30016 and e['code'] != 50013 and e['code'] != 10003:
-						item_invite = f"invite for {item1['name']}: https://discord.gg/{e['code']}\n"
-						break
-				except:
-					pass
+                    e = requests.post(f'https://discord.com/api/v9/channels/{item["id"]}/invites', json=payload, headers={'authorization': token}).json()
+                    try:
+                        if "rate limited" in e["message"]:
+                            time.sleep(e['retry_after']+2.0)
+                            e = requests.post(f"https://discord.com/api/v9/channels/{item['id']}/invites", json=payload, headers={"authorization": token}).json()
+                    except:
+                        pass
+                    try:
+                        if e['code'] != 30016 and e['code'] != 50013 and e['code'] != 10003:
+                            item_invite = f"invite for {item1['name']}: https://discord.gg/{e['code']}\n"
+                            break
+                    except:
+                        pass
 
-	#time.sleep(5)
-	if item_invite != '':
-		print("got invite")
-		write_to += item_invite
-	else:
-		print("invites disabled")
-		write_to += f'invites disabled for: {item1["name"]}'
+        #time.sleep(5)
+        if item_invite != '':
+            print("got invite")
+            write_to += item_invite
+        else:
+            print("invites disabled")
+            write_to += f'invites disabled for: {item1["name"]}'
     with open(f'accounts\\{account_name}\\guilds\\guild.txt', 'w', encoding='utf-8') as d:
         d.write(write_to)
     # export account info
