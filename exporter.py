@@ -1,3 +1,7 @@
+import json
+import random
+import string
+
 import requests
 import os
 import keyboard
@@ -78,16 +82,18 @@ def exportEntireDiscordAccount(token):
         os.mkdir(f"accounts\\{account_name}\\friends")
     if not os.path.exists(f"accounts\\{account_name}\\dms"):
         os.mkdir(f"accounts\\{account_name}\\dms")
-    if not os.path.exists(f"accounts\\{account_name}\\guilds"):
-        os.mkdir(f"accounts\\{account_name}\\guilds")
     # friends
     res = requests.get("https://discord.com/api/v9/users/@me/relationships", headers={'authorization': token}).json()
+    deleted = 0
     for item in res:
         name = item['user']['username'].replace('/', '').replace('\\', '').replace(':', '').replace('*', '').replace('"', '').replace('?', '').replace('|', '').replace('<', '').replace('>', '')
+        if name == "Deleted User":
+            deleted += 1
+            name += f"No.{deleted}"
         try:
             if f"{name}#{item['user']['discriminator']}.json" not in os.listdir(f'accounts\\{account_name}\\friends'):
                 with open(f"accounts\\{account_name}\\friends\\{name}#{item['user']['discriminator']}.json",'w',encoding='utf-8') as e:
-                    e.write(str(item))
+                    e.write(json.dumps(item, indent=4, sort_keys=True))
                     print(f"made a friend file for {name}#{item['user']['discriminator']}")
             else:
                 print(f"already made a friend file for {name}#{item['user']['discriminator']}")
@@ -97,14 +103,18 @@ def exportEntireDiscordAccount(token):
     channels = get_channels(token)
     for channel in channels:
         name = get_channel_name(token, channel["id"])
+        if name == "Deleted User":
+            deleted += 1
+            name += f"No.{deleted}"
         try:
             if f"{name}.json" not in os.listdir(f"accounts\\{account_name}\\dms"):
                 with open(f'accounts\\{account_name}\\dms\\{name}.json', 'w',encoding='utf-8') as e:
-                    e.write(str(get_channel_msgs(token, channel['id'])))
+                    e.write(json.dumps(get_channel_msgs(token, channel['id']), indent=4, sort_keys=True))
                     print(f'made a dms file for {name}')
             else:
                 print(f'already made a dms file for {name}')
-        except:
+        except Exception as e:
+            print(e)
             print(f'could not make a dms file for {name}')
     # guilds
     res = requests.get("https://discord.com/api/v9/users/@me/guilds", headers={'authorization': token}).json()
@@ -151,11 +161,11 @@ def exportEntireDiscordAccount(token):
         else:
             print("invites disabled")
             write_to += f'invites disabled for: {item1["name"]}\n'
-    with open(f'accounts\\{account_name}\\guilds\\guild.txt', 'w', encoding='utf-8') as d:
+    with open(f'accounts\\{account_name}\\guilds.txt', 'w', encoding='utf-8') as d:
         d.write(write_to)
     # export account info
     with open(f'accounts\\{account_name}\\account.json', 'w') as e:
-        e.write(str(account_info(token, 'whole')))
+        e.write(json.dumps(account_info(token, 'whole'), indent=4, sort_keys=True))
 
 
 while True:
