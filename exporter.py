@@ -87,7 +87,7 @@ def exportEntireDiscordAccount(token):
     deleted = 0
     for item in res:
         name = item['user']['username'].replace('/', '').replace('\\', '').replace(':', '').replace('*', '').replace('"', '').replace('?', '').replace('|', '').replace('<', '').replace('>', '')
-        if name == "Deleted User":
+        if name == "Deleted User" or name == "Deleted User#":
             deleted += 1
             name += f"No.{deleted}"
         try:
@@ -103,7 +103,7 @@ def exportEntireDiscordAccount(token):
     channels = get_channels(token)
     for channel in channels:
         name = get_channel_name(token, channel["id"])
-        if name == "Deleted User":
+        if name == "Deleted User" or name == "Deleted User#":
             deleted += 1
             name += f"No.{deleted}"
         try:
